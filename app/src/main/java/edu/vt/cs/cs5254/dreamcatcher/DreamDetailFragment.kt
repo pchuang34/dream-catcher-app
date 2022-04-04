@@ -15,6 +15,8 @@ import android.widget.Button
 import androidx.core.view.children
 import edu.vt.cs.cs5254.dreamcatcher.databinding.FragmentDreamDetailBinding
 import android.text.format.DateFormat
+import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import java.util.UUID
 
@@ -36,9 +38,11 @@ class DreamDetailFragment : Fragment() {
 
     lateinit var entriesButtonList: List<Button>
 
-    private val viewModel: DreamDetailViewModel by lazy {
-        ViewModelProvider(this).get(DreamDetailViewModel::class.java)
-    }
+//    private val viewModel: DreamDetailViewModel by lazy {
+//        ViewModelProvider(this).get(DreamDetailViewModel::class.java)
+//    }
+
+    private val viewModel: DreamDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //TODO we no longer have a crime property in the view-model
@@ -119,22 +123,26 @@ class DreamDetailFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        val titleWatcher = object : TextWatcher {
-            override fun beforeTextChanged(
-                sequence: CharSequence?, start: Int, count: Int, after: Int
-            ) {
-            }
+//        val titleWatcher = object : TextWatcher {
+//            override fun beforeTextChanged(
+//                sequence: CharSequence?, start: Int, count: Int, after: Int
+//            ) {
+//            }
+//
+//            override fun onTextChanged(
+//                sequence: CharSequence?,
+//                start: Int, before: Int, count: Int
+//            ) {
+//                dreamWithEntries.dream.title = sequence.toString()
+//            }
+//
+//            override fun afterTextChanged(sequence: Editable?) {}
+//        }
+//        binding.dreamTitleText.addTextChangedListener(titleWatcher)
 
-            override fun onTextChanged(
-                sequence: CharSequence?,
-                start: Int, before: Int, count: Int
-            ) {
-                dreamWithEntries.dream.title = sequence.toString()
-            }
-
-            override fun afterTextChanged(sequence: Editable?) {}
+        binding.dreamTitleText.doOnTextChanged { text, start, before, count ->
+            dreamWithEntries.dream.title = text.toString()
         }
-        binding.dreamTitleText.addTextChangedListener(titleWatcher)
 
         binding.dreamFulfilledCheckbox.apply {
             setOnCheckedChangeListener { _, isChecked ->
