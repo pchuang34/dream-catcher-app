@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,6 +38,42 @@ class DreamListFragment : Fragment() {
         super.onAttach(context)
         callbacks = context as Callbacks?
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+         setHasOptionsMenu(true)
+    }
+
+    // ----------------------------
+    // -      menu callbacks      -
+    // ----------------------------
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_dream_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.add_dream -> {
+                val dream = Dream()
+                val entries = mutableListOf<DreamEntry>()
+                entries += DreamEntry(kind = DreamEntryKind.CONCEIVED, dreamId = dream.id)
+                val dreamWithEntries = DreamWithEntries(dream, entries)
+                viewModel.addDream(dreamWithEntries)
+                callbacks?.onDreamSelected(dreamWithEntries.dream.id)
+                true
+            }
+            R.id.delete_all_dreams -> {
+                viewModel.deleteAllDreams()
+                true
+        }
+        else -> return super.onOptionsItemSelected(item) }
+    }
+
+    // ----------------------------
+    // -      menu callbacks      -
+    // ----------------------------
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
