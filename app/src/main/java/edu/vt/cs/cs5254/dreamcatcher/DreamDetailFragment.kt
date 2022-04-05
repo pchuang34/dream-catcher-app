@@ -2,10 +2,7 @@ package edu.vt.cs.cs5254.dreamcatcher
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -27,6 +24,9 @@ private val REFLECTION_BUTTON_COLOR = "#1aadf0"
 private val CONCEIVED_BUTTON_COLOR = "#00942a"
 private val DEFERRED_BUTTON_COLOR = "#454545"
 private val FULFILLED_BUTTON_COLOR = "#99004d"
+
+const val REQUEST_KEY_ADD_REFLECTION = "request_key"
+const val BUNDLE_KEY_REFLECTION_TEXT = "reflection_text"
 
 class DreamDetailFragment : Fragment() {
 
@@ -148,6 +148,7 @@ class DreamDetailFragment : Fragment() {
             setOnCheckedChangeListener { _, isChecked ->
                 dreamWithEntries.dream.isFulfilled = isChecked
                 if (isChecked) {
+                    //binding.addReflectionButton.isEnabled = false
                     val dreamId = dreamWithEntries.dream.id
                     if (!dreamWithEntries.dreamEntries.any { it.kind == DreamEntryKind.FULFILLED }) {
                         dreamWithEntries.dreamEntries += DreamEntry(
@@ -157,9 +158,9 @@ class DreamDetailFragment : Fragment() {
                     }
 
                 } else {
-                    val newEntries = dreamWithEntries.dreamEntries.toMutableList()
-                    newEntries.removeLast()
-                    dreamWithEntries.dreamEntries = newEntries
+                    val updatedEntries = dreamWithEntries.dreamEntries.toMutableList()
+                        .filterNot { entry -> entry.kind == DreamEntryKind.FULFILLED }
+                    dreamWithEntries.dreamEntries = updatedEntries
                 }
                 refreshView()
             }
@@ -176,12 +177,34 @@ class DreamDetailFragment : Fragment() {
                         )
                     }
                 } else {
-                    val newEntries = dreamWithEntries.dreamEntries.toMutableList()
-                    newEntries.removeLast()
-                    dreamWithEntries.dreamEntries = newEntries
+                    val updatedEntries = dreamWithEntries.dreamEntries.toMutableList()
+                        .filterNot { entry -> entry.kind == DreamEntryKind.DEFERRED }
+                    dreamWithEntries.dreamEntries = updatedEntries
                 }
                 refreshView()
             }
+        }
+
+        binding.addReflectionButton.setOnClickListener {
+            AddReflectionDialog().show(parentFragmentManager, REQUEST_KEY_ADD_REFLECTION)
+        }
+
+        parentFragmentManager.setFragmentResultListener(
+            REQUEST_KEY_ADD_REFLECTION,
+            viewLifecycleOwner
+        )
+        { _, bundle ->
+            val reflectionText = bundle.getString(BUNDLE_KEY_REFLECTION_TEXT, "")
+
+            val newDreamEntry = DreamEntry(
+                dreamId = dreamWithEntries.dream.id,
+                text = reflectionText,
+                kind = DreamEntryKind.REFLECTION
+            )
+
+            dreamWithEntries.dreamEntries += newDreamEntry
+
+            refreshView()
         }
     }
 
@@ -203,16 +226,19 @@ class DreamDetailFragment : Fragment() {
             dreamWithEntries.dream.isFulfilled -> {
                 binding.dreamFulfilledCheckbox.isChecked = true
                 binding.dreamDeferredCheckbox.isEnabled = false
+                binding.addReflectionButton.isEnabled = false
             }
             dreamWithEntries.dream.isDeferred -> {
                 binding.dreamDeferredCheckbox.isChecked = true
                 binding.dreamFulfilledCheckbox.isEnabled = false
+                binding.addReflectionButton.isEnabled = true
             }
             else -> {
                 binding.dreamFulfilledCheckbox.isChecked = false
                 binding.dreamDeferredCheckbox.isChecked = false
                 binding.dreamFulfilledCheckbox.isEnabled = true
                 binding.dreamDeferredCheckbox.isEnabled = true
+                binding.addReflectionButton.isEnabled = true
             }
         }
 

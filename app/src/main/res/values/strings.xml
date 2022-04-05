@@ -9,5 +9,6 @@
     <string name="dream_item_date">Date</string>
     <string name="target">target</string>
     <string name="archer">archer</string>
+    <string name="entry_text">Enter a reflection.</string>
 
 </resources>

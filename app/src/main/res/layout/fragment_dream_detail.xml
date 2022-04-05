@@ -86,8 +86,25 @@
         android:visibility="invisible"
         tools:text="Wed Nov 14 11:56 EST 2018"/>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-<!--    dream_title_label-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_reflection_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:clickable="true"
+            android:src="@drawable/ic_icon_add_foreground" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+    <!--    dream_title_label-->
 <!--    dream_title_text-->
 <!--    dream_fulfilled_checkbox-->
 <!--    dream_deferred_checkbox-->
