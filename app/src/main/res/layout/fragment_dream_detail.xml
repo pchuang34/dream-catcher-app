@@ -48,43 +48,51 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <TextView
         android:id="@+id/dream_entries_label"
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/dream_entries_label" />
-    <Button
-        android:id="@+id/dream_entry_0_button"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dream_entry_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_1_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_2_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_3_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_4_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
+        android:layout_height="330dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+<!--    <Button-->
+<!--        android:id="@+id/dream_entry_0_button"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="invisible"-->
+<!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/dream_entry_1_button"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="invisible"-->
+<!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/dream_entry_2_button"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="invisible"-->
+<!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/dream_entry_3_button"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="invisible"-->
+<!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+<!--    <Button-->
+<!--        android:id="@+id/dream_entry_4_button"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="invisible"-->
+<!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

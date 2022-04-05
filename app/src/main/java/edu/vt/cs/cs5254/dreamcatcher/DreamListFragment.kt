@@ -1,7 +1,6 @@
 package edu.vt.cs.cs5254.dreamcatcher
 
 import android.content.Context
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
