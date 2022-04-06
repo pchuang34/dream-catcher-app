@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import edu.vt.cs.cs5254.dreamcatcher.database.DreamDatabase
+import java.io.File
 import java.util.UUID
 import java.util.concurrent.Executors
 
@@ -87,6 +88,9 @@ class DreamRepository private constructor(context: Context) {
 
     private val dreamDao = database.dreamDao()
     private val executor = Executors.newSingleThreadExecutor()
+    private val filesDir = context.applicationContext.filesDir
+
+    fun getPhotoFile(dream: Dream): File = File(filesDir, dream.photoFileName)
 
     fun getDreams() = dreamDao.getDreams()
 

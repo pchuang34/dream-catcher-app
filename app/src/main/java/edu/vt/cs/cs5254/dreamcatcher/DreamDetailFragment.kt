@@ -1,21 +1,28 @@
 package edu.vt.cs.cs5254.dreamcatcher
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.widget.Button
 import edu.vt.cs.cs5254.dreamcatcher.databinding.FragmentDreamDetailBinding
 import android.text.format.DateFormat
 import android.view.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import edu.vt.cs.cs5254.dreamcatcher.databinding.ListItemDreamEntryBinding
+import java.io.File
 import java.util.UUID
 
 private const val TAG = "DreamDetailFragment"
@@ -37,6 +44,9 @@ class DreamDetailFragment : Fragment() {
     private var _binding: FragmentDreamDetailBinding? = null
     private val binding get() = _binding!! // !!guarantee that this is not null
     private var adapter: DreamEntryAdapter? = null
+    private lateinit var photoFile: File
+    private lateinit var photoUri: Uri
+    private lateinit var photoLauncher: ActivityResultLauncher<Uri>
 
 //    lateinit var entriesButtonList: List<Button>
 
@@ -47,22 +57,35 @@ class DreamDetailFragment : Fragment() {
     private val viewModel: DreamDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //TODO we no longer have a crime property in the view-model
+
         super.onCreate(savedInstanceState)
         dreamWithEntries = DreamWithEntries(Dream(), emptyList())
         val dreamId: UUID = arguments?.getSerializable(ARG_DREAM_ID) as UUID
         viewModel.loadDreamWithEntries(dreamId)
         Log.d(TAG, "Dream detail fragment for dream with ID $dreamId")
         setHasOptionsMenu(true)
+        photoLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) {
+            if (it) {
+                updatePhotoView()
+            }
+            requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
     }
 
+    //option menu functions
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_dream_detail, menu)
+        val cameraAvailable = PictureUtils.isCameraAvailable(requireActivity())
+        val menuItem = menu.findItem(R.id.take_dream_photo)
+        menuItem.apply {
+            Log.d(TAG, "Camera available: $cameraAvailable")
+            isEnabled = cameraAvailable
+            isVisible = cameraAvailable
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        //TODO
+
         return when (item.itemId) {
             R.id.share_dream -> {
                 Intent(Intent.ACTION_SEND).apply {
@@ -70,8 +93,9 @@ class DreamDetailFragment : Fragment() {
                     putExtra(Intent.EXTRA_TEXT, getSharedDream())
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        getString(R.string.dream_share_subject))
-                }.also{ intent ->
+                        getString(R.string.dream_share_subject)
+                    )
+                }.also { intent ->
                     val chooserIntent =
                         Intent.createChooser(intent, getString(R.string.send_share))
                     startActivity(chooserIntent)
@@ -79,10 +103,23 @@ class DreamDetailFragment : Fragment() {
                 true
             }
             R.id.take_dream_photo -> {
-
+                val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                    putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                }
+                requireActivity().packageManager
+                    .queryIntentActivities(captureIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                    .forEach { cameraActivity ->
+                        requireActivity().grantUriPermission(
+                            cameraActivity.activityInfo.packageName,
+                            photoUri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        )
+                    }
+                photoLauncher.launch(photoUri)
                 true
             }
-            else -> return super.onOptionsItemSelected(item) }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     private fun getSharedDream(): String {
@@ -101,9 +138,16 @@ class DreamDetailFragment : Fragment() {
         val conceivedDate = dreamWithEntries.dreamEntries.toMutableList().elementAt(0).date
         val dateString = DateFormat.format("MMM dd, yyyy", conceivedDate)
         var entriesTextList = mutableListOf<String>()
-        dreamWithEntries.dreamEntries.filter{dreamEntry -> dreamEntry.kind == DreamEntryKind.REFLECTION }.forEach{ dreamEntry -> entriesTextList += ("- " + dreamEntry.text) }
+        dreamWithEntries.dreamEntries.filter { dreamEntry -> dreamEntry.kind == DreamEntryKind.REFLECTION }
+            .forEach { dreamEntry -> entriesTextList += ("- " + dreamEntry.text) }
         val reflectionTextString = entriesTextList.joinToString(separator = "\n")
-        return getString(R.string.dream_share, dreamTitleString, dateString, reflectionTextString, stateString)
+        return getString(
+            R.string.dream_share,
+            dreamTitleString,
+            dateString,
+            reflectionTextString,
+            stateString
+        )
     }
 
     override fun onCreateView(
@@ -169,9 +213,11 @@ class DreamDetailFragment : Fragment() {
         viewModel.dreamWithEntriesLiveData.observe(
             viewLifecycleOwner, Observer { dreamWithEntries ->
                 dreamWithEntries?.let {
+                    this.dreamWithEntries = dreamWithEntries
+                    photoFile = viewModel.getPhotoFile(dreamWithEntries.dream)
+                    photoUri = FileProvider.getUriForFile(requireActivity(),"edu.vt.cs.cs5254.dreamcatcher.fileprovider",photoFile)
+                    refreshView()
                 }
-                this.dreamWithEntries = dreamWithEntries
-                refreshView()
             })
     }
 
@@ -298,6 +344,8 @@ class DreamDetailFragment : Fragment() {
             }
         }
 
+        updatePhotoView()
+
 //        entriesButtonList.forEach { it.visibility = View.INVISIBLE }
 //
 //        entriesButtonList.zip(dreamWithEntries.dreamEntries) { btn, ent ->
@@ -324,6 +372,15 @@ class DreamDetailFragment : Fragment() {
 //
 //        }
 
+    }
+
+    private fun updatePhotoView() {
+        if (photoFile.exists()) {
+            val bitmap = PictureUtils.getScaledBitmap(photoFile.path, 120, 120)
+            binding.dreamPhoto.setImageBitmap(bitmap)
+        } else {
+            binding.dreamPhoto.setImageDrawable(null)
+        }
     }
 
     private fun setButtonColor(button: Button, colorString: String, textColor: Int) {
@@ -365,7 +422,7 @@ class DreamDetailFragment : Fragment() {
 
         fun bind(dreamEntry: DreamEntry) {
             this.dreamEntry = dreamEntry
-            updateEntryButton(itemBinding.dreamEntryButton,dreamEntry)
+            updateEntryButton(itemBinding.dreamEntryButton, dreamEntry)
         }
 
         override fun onClick(v: View) {
@@ -376,7 +433,10 @@ class DreamDetailFragment : Fragment() {
     private inner class DreamEntryAdapter(var dreamEntries: List<DreamEntry>) :
         RecyclerView.Adapter<DreamDetailFragment.DreamEntryHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DreamDetailFragment.DreamEntryHolder {
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int
+        ): DreamDetailFragment.DreamEntryHolder {
             val itemBinding = ListItemDreamEntryBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return DreamEntryHolder(itemBinding)
