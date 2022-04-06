@@ -6,10 +6,11 @@
         <entry key="app/src/main/res/drawable/ic_icon_delete_background.xml" value="0.342" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.325" />
         <entry key="app/src/main/res/layout/dialog_add_reflection.xml" value="0.36614583333333334" />
-        <entry key="app/src/main/res/layout/fragment_dream_detail.xml" value="0.38315217391304346" />
+        <entry key="app/src/main/res/layout/fragment_dream_detail.xml" value="0.35170603674540685" />
         <entry key="app/src/main/res/layout/fragment_dream_list.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_dream.xml" value="0.33" />
         <entry key="app/src/main/res/layout/list_item_dream_entry.xml" value="0.4036458333333333" />
+        <entry key="app/src/main/res/menu/fragment_dream_detail.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/menu/fragment_dream_list.xml" value="0.33" />
       </map>
     </option>

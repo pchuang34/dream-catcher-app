@@ -1,16 +1,15 @@
 package edu.vt.cs.cs5254.dreamcatcher
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import edu.vt.cs.cs5254.dreamcatcher.databinding.FragmentDreamDetailBinding
 import android.text.format.DateFormat
+import android.view.*
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -54,6 +53,57 @@ class DreamDetailFragment : Fragment() {
         val dreamId: UUID = arguments?.getSerializable(ARG_DREAM_ID) as UUID
         viewModel.loadDreamWithEntries(dreamId)
         Log.d(TAG, "Dream detail fragment for dream with ID $dreamId")
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_dream_detail, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        //TODO
+        return when (item.itemId) {
+            R.id.share_dream -> {
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, getSharedDream())
+                    putExtra(
+                        Intent.EXTRA_SUBJECT,
+                        getString(R.string.dream_share_subject))
+                }.also{ intent ->
+                    val chooserIntent =
+                        Intent.createChooser(intent, getString(R.string.send_share))
+                    startActivity(chooserIntent)
+                }
+                true
+            }
+            R.id.take_dream_photo -> {
+
+                true
+            }
+            else -> return super.onOptionsItemSelected(item) }
+    }
+
+    private fun getSharedDream(): String {
+        val stateString = when {
+            dreamWithEntries.dream.isFulfilled -> {
+                getString(R.string.share_dream_fulfilled)
+            }
+            dreamWithEntries.dream.isDeferred -> {
+                getString(R.string.share_dream_deferred)
+            }
+            else -> {
+                ""
+            }
+        }
+        val dreamTitleString = dreamWithEntries.dream.title
+        val conceivedDate = dreamWithEntries.dreamEntries.toMutableList().elementAt(0).date
+        val dateString = DateFormat.format("MMM dd, yyyy", conceivedDate)
+        var entriesTextList = mutableListOf<String>()
+        dreamWithEntries.dreamEntries.filter{dreamEntry -> dreamEntry.kind == DreamEntryKind.REFLECTION }.forEach{ dreamEntry -> entriesTextList += ("- " + dreamEntry.text) }
+        val reflectionTextString = entriesTextList.joinToString(separator = "\n")
+        return getString(R.string.dream_share, dreamTitleString, dateString, reflectionTextString, stateString)
     }
 
     override fun onCreateView(

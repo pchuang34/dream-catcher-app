@@ -10,5 +10,10 @@
     <string name="target">target</string>
     <string name="archer">archer</string>
     <string name="entry_text">Enter a reflection.</string>
+    <string name="dream_share">&gt;&gt; %1$s &lt;&lt; \nThis dream was conceived on %2$s. \nDream reflections: \n%3$s\n%4$s</string>
+    <string name="share_dream_fulfilled">This dream has been fulfilled.</string>
+    <string name="share_dream_deferred">This dream has been deferred.</string>
+    <string name="dream_share_subject">Dream Share</string>
+    <string name="send_share">Share dream via</string>
 
 </resources>
