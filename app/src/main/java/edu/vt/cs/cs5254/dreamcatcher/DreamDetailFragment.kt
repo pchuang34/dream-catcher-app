@@ -19,6 +19,7 @@ import androidx.core.content.FileProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import edu.vt.cs.cs5254.dreamcatcher.databinding.ListItemDreamEntryBinding
@@ -38,7 +39,6 @@ const val BUNDLE_KEY_REFLECTION_TEXT = "reflection_text"
 
 class DreamDetailFragment : Fragment() {
 
-    //TODO
     private lateinit var dreamWithEntries: DreamWithEntries
 
     private var _binding: FragmentDreamDetailBinding? = null
@@ -47,12 +47,6 @@ class DreamDetailFragment : Fragment() {
     private lateinit var photoFile: File
     private lateinit var photoUri: Uri
     private lateinit var photoLauncher: ActivityResultLauncher<Uri>
-
-//    lateinit var entriesButtonList: List<Button>
-
-//    private val viewModel: DreamDetailViewModel by lazy {
-//        ViewModelProvider(this).get(DreamDetailViewModel::class.java)
-//    }
 
     private val viewModel: DreamDetailViewModel by viewModels()
 
@@ -68,10 +62,10 @@ class DreamDetailFragment : Fragment() {
             if (it) {
                 updatePhotoView()
             }
-            requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
+            requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        }
     }
 
-    //option menu functions
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_dream_detail, menu)
@@ -159,51 +153,8 @@ class DreamDetailFragment : Fragment() {
         val view = binding.root
 
         binding.dreamEntryRecyclerView.layoutManager = LinearLayoutManager(context)
-//        binding.dreamTitleText.setText(dreamWithEntries.dream.title)
 
-//        if (dreamWithEntries.dream.isFulfilled) {
-//            binding.dreamFulfilledCheckbox.isChecked = dreamWithEntries.dream.isFulfilled
-//            binding.dreamDeferredCheckbox.isEnabled = false
-//        }
-//
-//        if (dreamWithEntries.dream.isDeferred) {
-//            binding.dreamDeferredCheckbox.isChecked = dreamWithEntries.dream.isDeferred
-//            binding.dreamFulfilledCheckbox.isEnabled = false
-//        }
-
-        // ------------------------------------------------------
-        // Initialize entries-button list
-        // ------------------------------------------------------
-
-//        entriesButtonList = binding.root
-//            .children
-//            .toList()
-//            .filterIsInstance<Button>()
-
-//        entriesButtonList.zip(dreamWithEntries.dreamEntries) { btn, ent ->
-//            btn.visibility = View.VISIBLE
-//            when (ent.kind) {
-//                DreamEntryKind.CONCEIVED -> {
-//                    btn.text = "CONCEIVED"
-//                    setButtonColor(btn, CONCEIVED_BUTTON_COLOR, Color.WHITE)
-//                }
-//                DreamEntryKind.REFLECTION -> {
-//                    val time = DateFormat.format("MMM dd, yyyy", ent.date)
-//                    btn.text = time.toString() + ": " + ent.text
-//                    setButtonColor(btn, REFLECTION_BUTTON_COLOR, Color.BLACK)
-//                }
-//                DreamEntryKind.FULFILLED -> {
-//                    btn.text = "FULFILLED"
-//                    setButtonColor(btn, FULFILLED_BUTTON_COLOR, Color.WHITE)
-//                }
-//                DreamEntryKind.DEFERRED -> {
-//                    btn.text = "DEFERRED"
-//                    setButtonColor(btn, DEFERRED_BUTTON_COLOR, Color.WHITE)
-//                }
-//            }
-//
-//        }
-
+        refreshView()
         return view
     }
 
@@ -215,30 +166,28 @@ class DreamDetailFragment : Fragment() {
                 dreamWithEntries?.let {
                     this.dreamWithEntries = dreamWithEntries
                     photoFile = viewModel.getPhotoFile(dreamWithEntries.dream)
-                    photoUri = FileProvider.getUriForFile(requireActivity(),"edu.vt.cs.cs5254.dreamcatcher.fileprovider",photoFile)
+                    photoUri = FileProvider.getUriForFile(
+                        requireActivity(),
+                        "edu.vt.cs.cs5254.dreamcatcher.fileprovider",
+                        photoFile
+                    )
                     refreshView()
+                    updatePhotoView()
                 }
             })
     }
 
     override fun onStart() {
         super.onStart()
-//        val titleWatcher = object : TextWatcher {
-//            override fun beforeTextChanged(
-//                sequence: CharSequence?, start: Int, count: Int, after: Int
-//            ) {
-//            }
-//
-//            override fun onTextChanged(
-//                sequence: CharSequence?,
-//                start: Int, before: Int, count: Int
-//            ) {
-//                dreamWithEntries.dream.title = sequence.toString()
-//            }
-//
-//            override fun afterTextChanged(sequence: Editable?) {}
-//        }
-//        binding.dreamTitleText.addTextChangedListener(titleWatcher)
+
+        val itemTouchHelper = ItemTouchHelper(
+            SwipeToDeleteCallback(
+                binding.dreamEntryRecyclerView.adapter!! as DreamEntryAdapter,
+                0,
+                ItemTouchHelper.LEFT
+            )
+        )
+        itemTouchHelper.attachToRecyclerView(binding.dreamEntryRecyclerView)
 
         binding.dreamTitleText.doOnTextChanged { text, start, before, count ->
             dreamWithEntries.dream.title = text.toString()
@@ -344,34 +293,7 @@ class DreamDetailFragment : Fragment() {
             }
         }
 
-        updatePhotoView()
-
-//        entriesButtonList.forEach { it.visibility = View.INVISIBLE }
-//
-//        entriesButtonList.zip(dreamWithEntries.dreamEntries) { btn, ent ->
-//            btn.visibility = View.VISIBLE
-//            when (ent.kind) {
-//                DreamEntryKind.CONCEIVED -> {
-//                    btn.text = "CONCEIVED"
-//                    setButtonColor(btn, CONCEIVED_BUTTON_COLOR, Color.WHITE)
-//                }
-//                DreamEntryKind.REFLECTION -> {
-//                    val time = DateFormat.format("MMM dd, yyyy", ent.date)
-//                    btn.text = time.toString() + ": " + ent.text
-//                    setButtonColor(btn, REFLECTION_BUTTON_COLOR, Color.BLACK)
-//                }
-//                DreamEntryKind.FULFILLED -> {
-//                    btn.text = "FULFILLED"
-//                    setButtonColor(btn, FULFILLED_BUTTON_COLOR, Color.WHITE)
-//                }
-//                DreamEntryKind.DEFERRED -> {
-//                    btn.text = "DEFERRED"
-//                    setButtonColor(btn, DEFERRED_BUTTON_COLOR, Color.WHITE)
-//                }
-//            }
-//
-//        }
-
+        //updatePhotoView()
     }
 
     private fun updatePhotoView() {
@@ -447,6 +369,39 @@ class DreamDetailFragment : Fragment() {
             val dream = dreamEntries[position]
             holder.bind(dream)
         }
+
+        fun deleteItem(position: Int) {
+            val recentlyDeletedItem = dreamEntries[position];
+            val recentlyDeletedItemPosition = position;
+            if (recentlyDeletedItem.kind == DreamEntryKind.REFLECTION) {
+                dreamWithEntries.dreamEntries =
+                    dreamWithEntries.dreamEntries.filter { it.id != recentlyDeletedItem.id }
+                //notifyItemRemoved(position)
+            }
+            refreshView()
+        }
+    }
+
+    private inner class SwipeToDeleteCallback(
+        adapter: DreamEntryAdapter,
+        dragDirs: Int,
+        swipeDirs: Int
+    ) :
+        ItemTouchHelper.SimpleCallback(dragDirs, swipeDirs) {
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position: Int = viewHolder.adapterPosition
+            adapter?.deleteItem(position)
+        }
+
     }
 
     companion object {
