@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,45 +8,58 @@
     android:padding="16dp"
     tools:context=".DreamDetailFragment">
 
+    <ImageView
+        android:id="@+id/dream_photo"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:background="#3F51B5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
+
     <TextView
         android:id="@+id/dream_title_label"
         style="?android:listSeparatorTextViewStyle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/dream_title_label" />
+        android:text="@string/dream_title_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dream_photo"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/dream_title_text"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:autofillHints=""
         android:hint="@string/dream_title_text"
         android:inputType="text"
-        android:autofillHints="" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dream_photo"
+        app:layout_constraintTop_toBottomOf="@id/dream_title_label"
+        tools:ignore="TouchTargetSizeCheck" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <CheckBox
-            android:id="@+id/dream_fulfilled_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dream_fulfilled_checkbox"
-            app:layout_constraintEnd_toStartOf="@+id/dream_deferred_checkbox"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <CheckBox
+        android:id="@+id/dream_fulfilled_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dream_fulfilled_checkbox"
+        app:layout_constraintBottom_toBottomOf="@id/dream_photo"
+        app:layout_constraintEnd_toStartOf="@+id/dream_deferred_checkbox"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toEndOf="@id/dream_photo" />
 
-        <CheckBox
-            android:id="@+id/dream_deferred_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dream_deferred_checkbox"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/dream_fulfilled_checkbox"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <CheckBox
+        android:id="@+id/dream_deferred_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dream_deferred_checkbox"
+        app:layout_constraintBottom_toBottomOf="@id/dream_photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/dream_fulfilled_checkbox" />
 
 
     <TextView
@@ -54,43 +67,65 @@
         style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/dream_entries_label" />
-    <Button
-        android:id="@+id/dream_entry_0_button"
+        android:text="@string/dream_entries_label"
+        app:layout_constraintTop_toBottomOf="@id/dream_photo" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dream_entry_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_1_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_2_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_3_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
-    <Button
-        android:id="@+id/dream_entry_4_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        tools:text="Wed Nov 14 11:56 EST 2018"/>
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/dream_entries_label"
+        tools:layout_editor_absoluteX="16dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 
-<!--    dream_title_label-->
-<!--    dream_title_text-->
-<!--    dream_fulfilled_checkbox-->
-<!--    dream_deferred_checkbox-->
-<!--    dream_entries_label-->
+    <!--    <Button-->
+    <!--        android:id="@+id/dream_entry_0_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:visibility="invisible"-->
+    <!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/dream_entry_1_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:visibility="invisible"-->
+    <!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/dream_entry_2_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:visibility="invisible"-->
+    <!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/dream_entry_3_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:visibility="invisible"-->
+    <!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
+    <!--    <Button-->
+    <!--        android:id="@+id/dream_entry_4_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:visibility="invisible"-->
+    <!--        tools:text="Wed Nov 14 11:56 EST 2018"/>-->
 
-</LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_reflection_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/ic_icon_add_foreground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
+    <!--    dream_title_label-->
+    <!--    dream_title_text-->
+    <!--    dream_fulfilled_checkbox-->
+    <!--    dream_deferred_checkbox-->
+    <!--    dream_entries_label-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

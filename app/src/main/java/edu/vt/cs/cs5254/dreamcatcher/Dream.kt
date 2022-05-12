@@ -19,4 +19,8 @@ data class Dream(
     var date: Date = Date(),
     var isFulfilled: Boolean = false,
     var isDeferred: Boolean = false
-)
+) {
+    val photoFileName
+        get() = "IMG_$id.jpg"
+}
+

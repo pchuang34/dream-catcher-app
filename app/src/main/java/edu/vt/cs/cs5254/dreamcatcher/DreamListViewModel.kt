@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 
 class DreamListViewModel : ViewModel() {
 
+
     private val dreamRepository = DreamRepository.get()
     val dreamListLiveData = dreamRepository.getDreams()
 //    val dreams = mutableListOf<Dream>()
@@ -15,4 +16,15 @@ class DreamListViewModel : ViewModel() {
 //            dreams += dream
 //        }
 //    }
+//
+    fun addDream(dreamWithEntries: DreamWithEntries) {
+        dreamRepository.addDreamWithEntries(dreamWithEntries)
+    }
+
+    fun deleteAllDreams() {
+        dreamRepository.deleteAllDreamsInDatabase()
+        dreamRepository.deleteAllDreamEntriesInDatabase()
+    }
+
+
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import java.io.File
 import java.lang.IllegalArgumentException
 import java.util.UUID
 
@@ -27,6 +28,9 @@ class DreamDetailViewModel : ViewModel() {
 //    fun loadDreamWithEntries(dreamId: UUID){
 //        dreamWithEntries = dreamRepository.getDreamWithEntries(dreamId)
 //            ?: throw IllegalArgumentException("Dream with ID $dreamId not found")
+    fun getPhotoFile(dream: Dream): File {
+        return dreamRepository.getPhotoFile(dream)
+    }
 }
 
 //class DreamDetailViewModel : ViewModel() {
